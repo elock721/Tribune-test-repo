@@ -1,0 +1,58 @@
+
+defaults:
+  run:
+    # establish working directory
+    working-directory: aspnet_mvc
+
+# break down of tasks
+jobs:
+  build:
+    name: building
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: dotnet restore
+      - run: dotnet build
+
+  test:
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
+      # selects an action
+      - uses: actions/checkout@v2
+      - run: dotnet test
+
+  # analyze:
+  #   needs: [build, test]
+  #   runs-on: ubuntu-20.04
+  #   env:
+  #     SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+  #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     # runs a command line command
+  #     - run: dotnet tool install --global dotnet-sonarscanner
+  #     - run: |
+  #         dotnet sonarscanner begin /k:'2012-14-dotnet_week-4' /o:'2012-14-dotnet' /d:sonar.host.url='https://sonarcloud.io/' /d:sonar.login=$SONARCLOUD_TOKEN
+  #         dotnet build
+  #         dotnet test -p:CollectCoverage=true -p:CoverletOutputFormat=opencover --logger=trx
+  #         dotnet sonarscanner end /d:sonar.login=$SONARCLOUD_TOKEN
+
+  pack:
+    # needs:
+    #   - build
+    #   - test
+      # - analyze
+    runs-on: ubuntu-20.04
+    env:
+      DOCKER_TOKEN: ${{ secrets.DOCKER_SECRET_TEST }}
+      DOCKER_USER: ${{ secrets.DOCKER_USER_TEST }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
+      - run: docker image build -f ./dockerfile -t tribunedemo .
+      - run: docker image tag tribunedemo elock721/tribunetest:v5
+      - run: docker image push elock721/tribunetest:v5
+      - run: docker logout
+
+on: push
