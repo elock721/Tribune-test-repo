@@ -55,10 +55,10 @@ jobs:
       - uses: actions/checkout@v2
       - run: echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
       - run: docker image build -f aspnet_api_store/dockerfile -t tribuneapi .
-      - run: docker image tag tribunedemo elock721/tribunetest:v5
+      - run: docker image tag tribuneapi elock721/tribunetest:tribuneapi
       - run: docker image push elock721/tribunetest:tribuneapi
       - run: docker image build -f aspnet_mvc/dockerfile -t tribunemvc .
-      - run: docker image tag tribunedemo elock721/tribunetest:v5
+      - run: docker image tag tribunemvc elock721/tribunetest:tribunemvc
       - run: docker image push elock721/tribunetest:tribunemvc
       - run: docker logout
 
