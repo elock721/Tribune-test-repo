@@ -9,4 +9,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0
 
 WORKDIR /publish
 COPY --from=base workspace/out .
+# not machince based
 CMD ["dotnet", "MvcApp.Client.dll"]

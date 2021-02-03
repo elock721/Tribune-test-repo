@@ -2,7 +2,8 @@
 defaults:
   run:
     # establish working directory
-    working-directory: aspnet_mvc
+    working-directory: tribune_apiandmvc
+
 
 # break down of tasks
 jobs:
@@ -11,8 +12,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - run: dotnet restore
-      - run: dotnet build
+      - run: dotnet restore ./aspnet_api_store/
+      - run: dotnet build ./aspnet_api_store/
+      - run: dotnet restore ./aspnet_mvc/
+      - run: dotnet build ./aspnet_mvc/
 
   test:
     needs: build
@@ -20,7 +23,8 @@ jobs:
     steps:
       # selects an action
       - uses: actions/checkout@v2
-      - run: dotnet test
+      - run: dotnet test ./asp_api_store/
+      - run: dotnet test ./aspnet_mvc/
 
   # analyze:
   #   needs: [build, test]
@@ -50,9 +54,34 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
-      - run: docker image build -f ./dockerfile -t tribunedemo .
+      - run: docker image build -f aspnet_api_store/dockerfile -t tribuneapi .
       - run: docker image tag tribunedemo elock721/tribunetest:v5
-      - run: docker image push elock721/tribunetest:v5
+      - run: docker image push elock721/tribunetest:tribuneapi
+      - run: docker image build -f aspnet_mvc/dockerfile -t tribunemvc .
+      - run: docker image tag tribunedemo elock721/tribunetest:v5
+      - run: docker image push elock721/tribunetest:tribunemvc
       - run: docker logout
 
+
+
+
+
+
+
+      # establish working directory
+
+
+
+  # deploy:
+  #   needs: pack
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: azure/webapps-deploy@v2
+  #       with:
+  #         app name: tribunetest:v5
+  #         images: elock721/tribunetest:v5
+
+
 on: push
+
