@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 as base
 WORKDIR /workspace
 COPY aspnet_api_store .
 RUN dotnet build
-RUN dotnet publish --no-build -c Release -o out StoreApi.Client/StoreApi.Service.csproj
+RUN dotnet publish -c Release -o out StoreApi.Client/StoreApi.Service.csproj
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 
