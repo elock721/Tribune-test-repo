@@ -63,24 +63,26 @@ jobs:
       - run: docker logout
 
 
+  deploy:
+    needs:
+      - build
+      - pack
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/webapps-deploy@v2
+        with:
+          app name: tribuneapi
+          images: elock721/tribunetest:tribuneapi
+      - uses: azure/webapps-deploy@v2
+        with:
+          app name: tribunemvc
+          images: elock721/tribunetest:tribunemvc
 
 
-
-
-
-      # establish working directory
-
-
-
-  # deploy:
-  #   needs: pack
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: azure/webapps-deploy@v2
-  #       with:
-  #         app name: tribunetest:v5
-  #         images: elock721/tribunetest:v5
 
 
 on: push
